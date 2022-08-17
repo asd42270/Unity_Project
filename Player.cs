@@ -28,7 +28,7 @@ public class Player : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
+    {   
 
         GetInput();
         Move();
@@ -46,7 +46,6 @@ public class Player : MonoBehaviour
         wDown = Input.GetButton("Walk");
         jDown = Input.GetButtonDown("Jump");
     }
-
     void Move()
     {
         moveVec = new Vector3(hAxis, 0, vAxis).normalized;
@@ -56,7 +55,7 @@ public class Player : MonoBehaviour
         anim.SetBool("isRun", moveVec != Vector3.zero);
         anim.SetBool("isWalk", wDown);
     }
-
+    
     void Turn()
     {
         transform.LookAt(transform.position + moveVec);
@@ -81,7 +80,7 @@ public class Player : MonoBehaviour
     {
         if(jDown && moveVec != Vector3.zero && !isJump && !isDodge)
         {
-            speed = 2;
+            speed *= 2;
             anim.SetTrigger("doDodge");
             isDodge = true;
 
@@ -92,10 +91,10 @@ public class Player : MonoBehaviour
 
     void DodgeOut()
     {
-        speed= 0.5f;
+        speed *= 0.5f;
         isDodge = false;
     }
-
+    
 
     void OnCollisionEnter(Collision collision)
     {
