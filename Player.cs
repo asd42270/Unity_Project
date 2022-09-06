@@ -7,7 +7,14 @@ public class Player : MonoBehaviour
 
     public float speed;
     public GameObject[] weapons;
+    public GameObject[] grenades;
     public bool[] hasWeapons;
+    public int coin;
+    public int health;
+    public int hasGrenades;
+    public int maxCoin;
+    public int maxHealth;
+    public int maxHasGrenades;
     float hAxis;
     float vAxis;
     bool wDown;
@@ -123,28 +130,34 @@ public class Player : MonoBehaviour
         }
     }
 
-    void Swap(){
-        if(sDown1 && (!hasWeapons[0] || equipWeaponIndex == 0))
-            return;
-        if(sDown2 && (!hasWeapons[1] || equipWeaponIndex == 1))
-            return;
-        if(sDown3 && (!hasWeapons[2] || equipWeaponIndex == 2))
-            return;        
+     void Swap()
+    {
+        if(sDown1 && (!hasWeapons[0] || equipWeaponIndex==0))
+        return;
+        if(sDown2 && (!hasWeapons[1] || equipWeaponIndex==1))
+        return;
+        if(sDown3 && (!hasWeapons[2] || equipWeaponIndex==2))
+        return;
 
         int weaponIndex = -1;
         if (sDown1) weaponIndex = 0;
         if (sDown2) weaponIndex = 1;
         if (sDown3) weaponIndex = 2;
 
-        if((sDown1 || sDown2 || sDown3) && !isJump && !isDodge){
-            if (equipWeapon != null)
+        if((sDown1 || sDown2 || sDown3) && !isJump && !isDodge)
+        {
+            if(equipWeapon != null)
                 equipWeapon.SetActive(false);
+                
             equipWeaponIndex = weaponIndex;
             equipWeapon = weapons[weaponIndex];
             equipWeapon.SetActive(true);
+
             anim.SetTrigger("doSwap");
+
             isSwap = true;
-            Invoke("SwapeOut", 0.4f);
+
+            Invoke("SwapOut", 0.4f);
         }
     }
     void SwapOut()
@@ -159,6 +172,34 @@ public class Player : MonoBehaviour
          isJump = false;
 
         }
+    }
+
+    void OnTriggerEnter(Collider other) {
+        if(other.tag == "Item"){
+            Item item = other.GetComponent<Item>();
+            switch(item.type){
+                case Item.Type.Ammo:
+                    break;
+                case Item.Type.Coin:
+                    coin += item.value;
+                    if (coin > maxCoin)
+                        coin = maxCoin;           
+                    break;
+                case Item.Type.Heart:
+                    health += item.value;
+                    if (health > maxHealth)
+                        health = maxHealth;
+                    break;
+                case Item.Type.Grenade:
+                    grenades[hasGrenades].SetActive(true);
+                    hasGrenades += item.value;
+                    if (hasGrenades > maxHasGrenades)
+                    hasGrenades = maxHasGrenades;
+                    break;
+            }
+            Destroy(other.gameObject);
+        }
+
     }
 
     //플레이어의 무기 접근 인식
